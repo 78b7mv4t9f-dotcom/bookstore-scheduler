@@ -318,10 +318,10 @@ function renderDash() {
   var g = document.getElementById('dash-grid');
   if (!dates.length) { g.innerHTML='<p class="et">No dates scheduled yet.</p>'; return; }
   g.innerHTML = dates.map(function(dt) {
-    var da = avail.filter(function(a){ return a.date_id===dt.id; });
+    var da = avail.filter(function(a){ return String(a.date_id)===String(dt.id); });
     var sh = SHIFTS.map(function(s) {
-      var who = da.filter(function(a){ return a.shift_id===s.id; }).map(function(a) {
-        var v = vols.find(function(x){ return x.id===a.volunteer_id; });
+      var who = da.filter(function(a){ return String(a.shift_id)===String(s.id); }).map(function(a) {
+        var v = vols.find(function(x){ return String(x.id)===String(a.volunteer_id); });
         return v ? '<span class="acp'+(s.optional?' opt':'')+'">'+v.first_name+' '+v.last_name+'</span>' : '';
       }).join('') || '<span class="et">No responses yet</span>';
       var optTag = s.optional ? '<span style="font-size:.6rem;color:var(--bt-ice);font-weight:700;text-transform:uppercase;margin-left:5px">(optional)</span>' : '';
@@ -446,7 +446,7 @@ function renderDates() {
   var list=document.getElementById('dlist');
   if (!dates.length) { list.innerHTML='<p class="et">No dates scheduled.</p>'; return; }
   list.innerHTML = dates.map(function(d) {
-    var cnt = avail.filter(function(a){ return a.date_id===d.id; }).length;
+    var cnt = avail.filter(function(a){ return String(a.date_id)===String(d.id); }).length;
     return '<div class="di"><div><div class="dn">'+fmt(d.date)+'</div>'+(d.label?'<div class="dlb">'+d.label+'</div>':'')+
       '<div class="dc">'+cnt+' response'+(cnt!==1?'s':'')+' received</div></div>'+
       '<button class="btn bd" onclick="removeDate('+d.id+')">Remove</button></div>';
@@ -518,10 +518,10 @@ function renderAdmin() {
   var tb=document.getElementById('atbody');
   if (!dates.length) { tb.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--bt-ice);font-style:italic;padding:22px;">No dates scheduled.</td></tr>'; return; }
   tb.innerHTML = dates.map(function(dt) {
-    var da = avail.filter(function(a){ return a.date_id===dt.id; });
+    var da = avail.filter(function(a){ return String(a.date_id)===String(dt.id); });
     var cells = SHIFTS.map(function(s, i) {
-      var names = da.filter(function(a){ return a.shift_id===s.id; }).map(function(a) {
-        var v=vols.find(function(x){ return x.id===a.volunteer_id; });
+      var names = da.filter(function(a){ return String(a.shift_id)===String(s.id); }).map(function(a) {
+        var v=vols.find(function(x){ return String(x.id)===String(a.volunteer_id); });
         return v ? '<span class="tc tc'+(i+1)+'">'+v.first_name+' '+v.last_name+'</span>' : '';
       }).join('') || '<span style="color:var(--bt-ice);font-size:.78em;font-style:italic">None yet</span>';
       return '<td'+(s.optional?' style="opacity:.75"':'')+'>'+names+'</td>';
