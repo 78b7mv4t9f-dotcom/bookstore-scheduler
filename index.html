@@ -3,113 +3,80 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bookstore Volunteer Scheduler — Bent Tree Bible Fellowship</title>
+<title>Bookstore Volunteer Scheduler - Bent Tree Bible Fellowship</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-  :root {
-    --bt-green:#70A145; --bt-green-light:#6CBE4B;
-    --bt-navy:#252542; --bt-navy-mid:#444A54; --bt-ice:#7C939B;
-    --surface:#F4F6F8; --border:rgba(37,37,66,0.12); --shadow:rgba(37,37,66,0.10);
-  }
+  :root{--bt-green:#70A145;--bt-green-light:#6CBE4B;--bt-navy:#252542;--bt-navy-mid:#444A54;--bt-ice:#7C939B;--surface:#F4F6F8;--border:rgba(37,37,66,0.12);--shadow:rgba(37,37,66,0.10);}
   *{box-sizing:border-box;margin:0;padding:0;}
   body{font-family:'Lato',sans-serif;background:var(--surface);color:var(--bt-navy);min-height:100vh;}
-
   header{background:var(--bt-navy);padding:0 40px;display:flex;align-items:center;gap:20px;height:74px;box-shadow:0 2px 16px rgba(37,37,66,.35);}
-  .logo-wrap{height:46px;display:flex;align-items:center;flex-shrink:0;}
-  .logo-wrap svg{height:46px;width:auto;}
+  .logo-wrap{height:46px;display:flex;align-items:center;flex-shrink:0;}.logo-wrap svg{height:46px;width:auto;}
   .hd{width:1px;height:34px;background:rgba(255,255,255,.2);}
   .ht p{font-size:.7rem;color:var(--bt-ice);font-weight:300;letter-spacing:.14em;text-transform:uppercase;}
-
   nav{background:#fff;border-bottom:1px solid var(--border);display:flex;padding:0 40px;overflow-x:auto;}
   .tb{background:transparent;border:none;border-bottom:3px solid transparent;color:var(--bt-navy-mid);font-family:'Lato',sans-serif;font-size:.77rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:16px 18px 13px;cursor:pointer;transition:all .18s;white-space:nowrap;}
-  .tb:hover{color:var(--bt-green);}
-  .tb.active{color:var(--bt-green);border-bottom-color:var(--bt-green);}
-
-  .main{padding:36px 40px;max-width:1200px;margin:0 auto;}
-  .sec{display:none;} .sec.active{display:block;}
-
+  .tb:hover{color:var(--bt-green);}.tb.active{color:var(--bt-green);border-bottom-color:var(--bt-green);}
+  .main{padding:36px 40px;max-width:1200px;margin:0 auto;}.sec{display:none;}.sec.active{display:block;}
   .pt{font-family:'Bebas Neue',sans-serif;font-size:1.75rem;color:var(--bt-navy);letter-spacing:.06em;margin-bottom:4px;}
   .ps{font-size:.81rem;color:var(--bt-navy-mid);font-weight:300;margin-bottom:26px;}
   .ct{font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--bt-navy);letter-spacing:.06em;margin-bottom:12px;}
   .card{background:#fff;border:1px solid var(--border);border-radius:8px;padding:22px 26px;margin-bottom:14px;box-shadow:0 1px 8px var(--shadow);}
-
   .sr{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:26px;}
   .sb{flex:1;min-width:110px;background:#fff;border:1px solid var(--border);border-top:3px solid var(--bt-green);border-radius:8px;padding:16px 18px;text-align:center;box-shadow:0 1px 6px var(--shadow);}
   .sn{font-family:'Bebas Neue',sans-serif;font-size:2.1rem;color:var(--bt-green);line-height:1;}
   .sl-stat{font-size:.69rem;color:var(--bt-navy-mid);text-transform:uppercase;letter-spacing:.1em;font-weight:700;margin-top:4px;}
-
   .ag{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;}
   .ac{background:#fff;border:1px solid var(--border);border-radius:8px;overflow:hidden;box-shadow:0 1px 8px var(--shadow);}
   .ach{background:var(--bt-navy);color:#fff;padding:10px 15px;display:flex;align-items:baseline;justify-content:space-between;gap:8px;}
   .acd{font-family:'Bebas Neue',sans-serif;font-size:.93rem;letter-spacing:.06em;}
   .acl{font-size:.67rem;color:var(--bt-green-light);font-weight:700;letter-spacing:.06em;text-transform:uppercase;}
-  .acb{padding:13px 15px;}
-  .ash{margin-bottom:10px;} .ash:last-child{margin-bottom:0;}
+  .acb{padding:13px 15px;}.ash{margin-bottom:10px;}.ash:last-child{margin-bottom:0;}
   .asn{font-size:.67rem;font-weight:900;color:var(--bt-navy-mid);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px;}
   .ash.optional .asn{color:var(--bt-ice);}
   .acs{display:flex;flex-wrap:wrap;gap:5px;}
   .acp{background:rgba(112,161,69,.12);color:#3a5c1a;border-radius:3px;padding:3px 9px;font-size:.75rem;font-weight:700;}
   .acp.opt{background:rgba(124,147,155,.12);color:var(--bt-navy-mid);}
   .et{color:var(--bt-ice);font-size:.77rem;font-style:italic;}
-
   .fr{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px;}
   .fg{display:flex;flex-direction:column;gap:5px;flex:1;min-width:175px;}
   .fg label{font-size:.69rem;font-weight:900;color:var(--bt-navy);letter-spacing:.1em;text-transform:uppercase;}
   .fg input,.fg select{border:1.5px solid var(--border);border-radius:5px;padding:9px 12px;font-family:'Lato',sans-serif;font-size:.87rem;color:var(--bt-navy);background:#fff;outline:none;transition:border-color .18s,box-shadow .18s;}
   .fg input:focus,.fg select:focus{border-color:var(--bt-green);box-shadow:0 0 0 3px rgba(112,161,69,.15);}
-
   .btn{font-family:'Lato',sans-serif;font-size:.75rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;border:none;border-radius:5px;padding:10px 20px;cursor:pointer;transition:all .18s;}
-  .bp{background:var(--bt-green);color:#fff;}
-  .bp:hover{background:var(--bt-green-light);transform:translateY(-1px);box-shadow:0 4px 12px rgba(112,161,69,.3);}
+  .bp{background:var(--bt-green);color:#fff;}.bp:hover{background:var(--bt-green-light);transform:translateY(-1px);box-shadow:0 4px 12px rgba(112,161,69,.3);}
   .bp:disabled{background:var(--bt-ice);transform:none;box-shadow:none;cursor:not-allowed;}
-  .bg2{background:transparent;border:1.5px solid var(--border);color:var(--bt-navy-mid);}
-  .bg2:hover{background:var(--surface);}
-  .bd{background:transparent;border:1.5px solid rgba(180,40,40,.3);color:#b42828;font-size:.69rem;padding:6px 11px;}
-  .bd:hover{background:rgba(180,40,40,.06);}
-
+  .bg2{background:transparent;border:1.5px solid var(--border);color:var(--bt-navy-mid);}.bg2:hover{background:var(--surface);}
+  .bd{background:transparent;border:1.5px solid rgba(180,40,40,.3);color:#b42828;font-size:.69rem;padding:6px 11px;}.bd:hover{background:rgba(180,40,40,.06);}
   .sl2{display:flex;flex-direction:column;gap:7px;margin-top:4px;}
   .sc{display:flex;align-items:flex-start;gap:11px;padding:11px 13px;border:1.5px solid var(--border);border-radius:6px;cursor:pointer;transition:all .15s;background:#fff;}
   .sc:hover{border-color:var(--bt-green);background:rgba(112,161,69,.04);}
-  .sc.sc-opt{border-style:dashed;}
-  .sc.sc-opt:hover{border-color:var(--bt-ice);background:rgba(124,147,155,.04);}
+  .sc.sc-opt{border-style:dashed;}.sc.sc-opt:hover{border-color:var(--bt-ice);background:rgba(124,147,155,.04);}
   .sc input[type=checkbox]{accent-color:var(--bt-green);width:16px;height:16px;flex-shrink:0;margin-top:2px;}
-  .sc strong{font-size:.87rem;font-weight:700;}
-  .sc span{font-size:.77rem;color:var(--bt-navy-mid);}
+  .sc strong{font-size:.87rem;font-weight:700;}.sc span{font-size:.77rem;color:var(--bt-navy-mid);}
   .opt-badge{display:inline-block;font-size:.6rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;background:rgba(124,147,155,.15);color:var(--bt-ice);border-radius:3px;padding:2px 6px;margin-left:7px;vertical-align:middle;}
-
   .vg{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:11px;}
   .vc{background:#fff;border:1px solid var(--border);border-radius:8px;padding:13px 15px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 1px 6px var(--shadow);}
   .vi{display:flex;align-items:center;gap:11px;}
   .va{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.86rem;font-weight:900;color:#fff;flex-shrink:0;}
-  .vn{font-size:.88rem;font-weight:700;} .vr{font-size:.7rem;color:var(--bt-navy-mid);font-weight:300;margin-top:2px;}
-
+  .vn{font-size:.88rem;font-weight:700;}.vr{font-size:.7rem;color:var(--bt-navy-mid);font-weight:300;margin-top:2px;}
   .di{background:#fff;border:1px solid var(--border);border-left:4px solid var(--bt-green);border-radius:8px;padding:13px 18px;margin-bottom:9px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:9px;box-shadow:0 1px 6px var(--shadow);}
-  .dn{font-weight:700;font-size:.9rem;}
-  .dlb{font-size:.7rem;color:var(--bt-green);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-top:2px;}
+  .dn{font-weight:700;font-size:.9rem;}.dlb{font-size:.7rem;color:var(--bt-green);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-top:2px;}
   .dc{font-size:.73rem;color:var(--bt-navy-mid);margin-top:2px;}
-
   .tw{overflow-x:auto;border-radius:8px;box-shadow:0 1px 12px var(--shadow);}
   .at{width:100%;border-collapse:collapse;background:#fff;min-width:620px;}
   .at th{background:var(--bt-navy);color:#fff;padding:13px 17px;font-family:'Bebas Neue',sans-serif;font-size:.87rem;letter-spacing:.08em;text-align:left;}
-  .at th:first-child{border-radius:8px 0 0 0;} .at th:last-child{border-radius:0 8px 0 0;}
+  .at th:first-child{border-radius:8px 0 0 0;}.at th:last-child{border-radius:0 8px 0 0;}
   .at th.opt-th{color:var(--bt-ice);}
   .at td{padding:11px 17px;border-bottom:1px solid var(--border);font-size:.85rem;vertical-align:top;}
-  .at tr:last-child td{border-bottom:none;} .at tr:hover td{background:rgba(112,161,69,.04);}
+  .at tr:last-child td{border-bottom:none;}.at tr:hover td{background:rgba(112,161,69,.04);}
   .tc{display:inline-block;padding:3px 9px;border-radius:3px;font-size:.73rem;font-weight:700;margin:2px 3px 2px 0;}
-  .tc1{background:rgba(112,161,69,.14);color:#3a5c1a;}
-  .tc2{background:rgba(37,37,66,.10);color:var(--bt-navy);}
-  .tc3{background:rgba(124,147,155,.13);color:var(--bt-navy-mid);}
-
-  .ib{background:rgba(112,161,69,.09);border:1px solid rgba(112,161,69,.28);border-left:4px solid var(--bt-green);border-radius:6px;padding:11px 15px;font-size:.81rem;color:#3a5c1a;margin-bottom:18px;display:flex;align-items:center;gap:9px;}
-
-  /* LOADING */
+  .tc1{background:rgba(112,161,69,.14);color:#3a5c1a;}.tc2{background:rgba(37,37,66,.10);color:var(--bt-navy);}.tc3{background:rgba(124,147,155,.13);color:var(--bt-navy-mid);}
+  .ib{background:rgba(112,161,69,.09);border:1px solid rgba(112,161,69,.28);border-left:4px solid var(--bt-green);border-radius:6px;padding:11px 15px;font-size:.81rem;color:#3a5c1a;margin-bottom:18px;}
   .loading-bar{position:fixed;top:0;left:0;height:3px;background:var(--bt-green);width:0;transition:width .3s;z-index:9999;}
-  .loading-bar.active{width:60%;}
-  .loading-bar.done{width:100%;opacity:0;transition:width .2s,opacity .4s .2s;}
+  .loading-bar.active{width:60%;}.loading-bar.done{width:100%;opacity:0;transition:width .2s,opacity .4s .2s;}
   .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;margin-right:6px;vertical-align:middle;}
   @keyframes spin{to{transform:rotate(360deg);}}
-
-  /* PIN OVERLAY */
   .pin-overlay{position:fixed;inset:0;background:rgba(37,37,66,.72);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:9999;}
   .pin-box{background:#fff;border-radius:12px;padding:40px 44px;text-align:center;box-shadow:0 12px 48px rgba(37,37,66,.3);max-width:340px;width:90%;}
   .pin-logo{margin-bottom:20px;}
@@ -118,11 +85,9 @@
   .pin-input{width:100%;border:2px solid var(--border);border-radius:6px;padding:11px 14px;font-family:'Lato',sans-serif;font-size:1.1rem;letter-spacing:.3em;color:var(--bt-navy);text-align:center;outline:none;margin-bottom:12px;}
   .pin-input:focus{border-color:var(--bt-green);box-shadow:0 0 0 3px rgba(112,161,69,.15);}
   .pin-err{font-size:.78rem;color:#b42828;min-height:18px;margin-bottom:10px;}
-
   .toast{position:fixed;bottom:26px;right:26px;background:var(--bt-navy);color:#fff;padding:11px 19px;border-radius:6px;font-size:.83rem;font-weight:700;letter-spacing:.04em;box-shadow:0 6px 24px rgba(37,37,66,.25);border-left:4px solid var(--bt-green);transform:translateY(80px);opacity:0;transition:all .28s;z-index:9998;}
   .toast.show{transform:translateY(0);opacity:1;}
   .ar{display:flex;gap:9px;flex-wrap:wrap;margin-top:18px;}
-
   @media(max-width:600px){header{padding:0 16px;}nav{padding:0 10px;}.main{padding:20px 14px;}.fr{flex-direction:column;}}
 </style>
 </head>
@@ -139,20 +104,15 @@
 <nav>
   <button class="tb active" onclick="showTab('dashboard',this)">Dashboard</button>
   <button class="tb" onclick="showTab('availability',this)">Sign Up for Shifts</button>
-  <button class="tb" id="admin-tab-btn" onclick="promptPin('admin',this)" style="display:none">Admin View</button>
+  <button class="tb" id="admin-tab-btn" onclick="promptPin('admin')" style="display:none">Admin View</button>
 </nav>
 
 <div class="pin-overlay" id="pin-overlay" style="display:none;">
   <div class="pin-box">
-    <div class="pin-logo">
-      <svg width="52" height="52" viewBox="0 0 272 276" xmlns="http://www.w3.org/2000/svg">
-        <path fill="#70A145" d="m120.45,156.77s-24.43,9.64-24.77,14.09c0,0-5.36-6.84-2.61-13.06,0,0,12.96-7.73,29.43-12.34,0,0,16.32-39.26,21.58-43.67l1.31,2.24s-14.08,33.54-12.66,37.6c0,0,26.37-6.24,29.74-4.79l1.03,5.21s-28.77,7.48-33.06,10.59c0,0-3.76,40.93-2.19,48.74,0,0,30.37-.79,37.29-22.13,0,0,8.54-16.9,5.01-69.23,0,0-2.2-50.15-.13-52.25,0,0-43.65,26.88-48.8,31.76,0,0-63.3,44.09-22.26,111.54l1.16,5.72s-43.95-28.65-26.66-76.55c0,0,7.27-28.96,62.21-60.59,0,0,18.65-10.84,34.05-21.54-10.67-3.82-22.12-6-34.1-6-56.07,0-101.52,45.45-101.52,101.51,0,49.63,35.63,90.88,82.7,99.71-4.5-21.34-6.15-50.74,3.25-86.58Z"/>
-        <path fill="#70A145" d="m182.42,53.43c-2.82,9.49-4.92,22.19-3.47,37.34,0,0,3.44,36.62,4.65,47.51,0,0,9.73,78.51-55.25,78.9,0,0,1.63,13.24,7.39,27.98.09,0,.17,0,.26,0,56.06,0,101.52-45.45,101.52-101.52,0-39.32-22.41-73.36-55.11-90.22Z"/>
-      </svg>
-    </div>
+    <div class="pin-logo"><svg width="52" height="52" viewBox="0 0 272 276" xmlns="http://www.w3.org/2000/svg"><path fill="#70A145" d="m120.45,156.77s-24.43,9.64-24.77,14.09c0,0-5.36-6.84-2.61-13.06,0,0,12.96-7.73,29.43-12.34,0,0,16.32-39.26,21.58-43.67l1.31,2.24s-14.08,33.54-12.66,37.6c0,0,26.37-6.24,29.74-4.79l1.03,5.21s-28.77,7.48-33.06,10.59c0,0-3.76,40.93-2.19,48.74,0,0,30.37-.79,37.29-22.13,0,0,8.54-16.9,5.01-69.23,0,0-2.2-50.15-.13-52.25,0,0-43.65,26.88-48.8,31.76,0,0-63.3,44.09-22.26,111.54l1.16,5.72s-43.95-28.65-26.66-76.55c0,0,7.27-28.96,62.21-60.59,0,0,18.65-10.84,34.05-21.54-10.67-3.82-22.12-6-34.1-6-56.07,0-101.52,45.45-101.52,101.51,0,49.63,35.63,90.88,82.7,99.71-4.5-21.34-6.15-50.74,3.25-86.58Z"/><path fill="#70A145" d="m182.42,53.43c-2.82,9.49-4.92,22.19-3.47,37.34,0,0,3.44,36.62,4.65,47.51,0,0,9.73,78.51-55.25,78.9,0,0,1.63,13.24,7.39,27.98.09,0,.17,0,.26,0,56.06,0,101.52-45.45,101.52-101.52,0-39.32-22.41-73.36-55.11-90.22Z"/></svg></div>
     <div class="pin-title">Admin Access</div>
     <div class="pin-sub">Enter the 4-digit PIN to continue</div>
-    <input class="pin-input" type="password" id="pin-input" maxlength="4" inputmode="numeric" placeholder="••••" onkeydown="if(event.key==='Enter')checkPin()">
+    <input class="pin-input" type="password" id="pin-input" maxlength="4" inputmode="numeric" placeholder="&bull;&bull;&bull;&bull;" onkeydown="if(event.key==='Enter')checkPin()">
     <div class="pin-err" id="pin-err"></div>
     <button class="btn bp" style="width:100%" onclick="checkPin()">Unlock</button>
     <div style="margin-top:14px;"><button class="btn bg2" style="width:100%;font-size:.7rem" onclick="closePin()">Cancel</button></div>
@@ -170,19 +130,19 @@
 
   <div id="tab-availability" class="sec">
     <div class="pt">Sign Up for Shifts</div>
-    <div class="ps">Select your name and a Sunday, then check the shifts you're available for — tap Save when done</div>
+    <div class="ps">Select your name and a Sunday, then check the shifts you are available for - tap Save when done</div>
     <div class="card">
       <div class="fr">
         <div class="fg"><label>Your Name</label>
-          <select id="av-vol"><option value="">— Select your name —</option></select></div>
+          <select id="av-vol"><option value="">-- Select your name --</option></select></div>
         <div class="fg"><label>Sunday Date</label>
-          <select id="av-date"><option value="">— Select a date —</option></select></div>
+          <select id="av-date"><option value="">-- Select a date --</option></select></div>
       </div>
       <div id="sw" style="display:none;">
         <div class="ct" style="margin-top:4px;">Available Shifts</div>
         <div class="sl2" id="sl"></div>
         <div class="ar">
-          <button class="btn bp" id="save-btn" onclick="saveAvail()">&#10003; Save Availability</button>
+          <button class="btn bp" onclick="saveAvail()">&#10003; Save Availability</button>
           <button class="btn bg2" onclick="clearAvail()">Clear My Selections</button>
         </div>
       </div>
@@ -209,7 +169,7 @@
     <div class="ps">Add upcoming Sundays or special event dates</div>
     <div class="card" style="margin-bottom:14px;">
       <div class="ct">Add Next 8 Sundays</div>
-      <div style="font-size:.82rem;color:var(--bt-navy-mid);margin-bottom:14px;">Automatically adds the next 8 Sundays that aren't already on the schedule.</div>
+      <div style="font-size:.82rem;color:var(--bt-navy-mid);margin-bottom:14px;">Automatically adds the next 8 Sundays not already on the schedule.</div>
       <button class="btn bp" id="add8-btn" onclick="addNext8Sundays()">+ Add Next 8 Sundays</button>
     </div>
     <div class="card" style="margin-bottom:22px;">
@@ -226,15 +186,15 @@
 
   <div id="tab-admin" class="sec">
     <div class="pt">Admin View</div>
-    <div class="ps">Full availability breakdown — use this to make final scheduling decisions</div>
-    <div class="ib">📋 Shift 1 (8:30–9:00 am) is optional — no minimum coverage required. Shifts 2 and 3 should have at least one volunteer each.</div>
+    <div class="ps">Full availability breakdown - use this to make final scheduling decisions</div>
+    <div class="ib">Shift 1 (8:30-9:00 am) is optional - no minimum coverage required. Shifts 2 and 3 should have at least one volunteer each.</div>
     <div class="tw">
       <table class="at">
         <thead><tr>
           <th>Date</th>
-          <th class="opt-th">Shift 1 8:30–9 am <span style="font-size:.7rem;opacity:.7">(optional)</span></th>
-          <th>Shift 2 10:15–11 am</th>
-          <th>Shift 3 12:15–12:30 pm</th>
+          <th class="opt-th">Shift 1 8:30-9 am (optional)</th>
+          <th>Shift 2 10:15-11 am</th>
+          <th>Shift 3 12:15-12:30 pm</th>
         </tr></thead>
         <tbody id="atbody"></tbody>
       </table>
@@ -249,254 +209,218 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// ── CONFIG ──────────────────────────────────────────────────────────────────
-const SB_URL = 'https://jajzxdtnqyogffyvhnlb.supabase.co';
-const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imphanp4ZHRucXlvZ2ZmeXZobmxiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0ODE0NjcsImV4cCI6MjA5MzA1NzQ2N30.Ee3ZbDqLQLeb6iMD-jnMfNCdpHRickdMXyO5S8dOklI';
-const ADMIN_PIN = '1234'; // Change this to your desired 4-digit PIN
 
-const SHIFTS = [
-  {id:'shift1',label:'Shift 1 8:30–9 am',   time:'8:30 am – 9:00 am',  optional:true},
-  {id:'shift2',label:'Shift 2 10:15–11 am', time:'10:15 am – 11:00 am',optional:false},
-  {id:'shift3',label:'Shift 3 12:15–12:30 pm',time:'12:15 pm – 12:30 pm',optional:false},
+var SB_URL = 'https://jajzxdtnqyogffyvhnlb.supabase.co';
+var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imphanp4ZHRucXlvZ2ZmeXZobmxiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0ODE0NjcsImV4cCI6MjA5MzA1NzQ2N30.Ee3ZbDqLQLeb6iMD-jnMfNCdpHRickdMXyO5S8dOklI';
+var ADMIN_PIN = '1234';
+
+var SHIFTS = [
+  {id:'shift1', label:'Shift 1 8:30-9 am',     time:'8:30 am - 9:00 am',   optional:true},
+  {id:'shift2', label:'Shift 2 10:15-11 am',   time:'10:15 am - 11:00 am', optional:false},
+  {id:'shift3', label:'Shift 3 12:15-12:30 pm',time:'12:15 pm - 12:30 pm', optional:false}
 ];
-const AVC=['#252542','#70A145','#444A54','#6CBE4B','#7C939B','#3a5c1a','#1a3a5c','#5c3a1a','#3a1a5c','#1a5c3a'];
+var AVC = ['#252542','#70A145','#444A54','#6CBE4B','#7C939B','#3a5c1a','#1a3a5c','#5c3a1a','#3a1a5c','#1a5c3a'];
 
-// ── SUPABASE HELPERS ─────────────────────────────────────────────────────────
-async function sbFetch(path, opts={}) {
-  const res = await fetch(SB_URL+'/rest/v1/'+path, {
-    headers: {
-      'apikey': SB_KEY,
-      'Authorization': 'Bearer '+SB_KEY,
-      'Content-Type': 'application/json',
-      'Prefer': opts.prefer||'return=representation',
-      ...opts.headers
-    },
-    ...opts
-  });
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(err);
-  }
-  const text = await res.text();
-  return text ? JSON.parse(text) : [];
-}
-
-const db = {
-  async getVols()   { return sbFetch('volunteers?order=last_name.asc,first_name.asc'); },
-  async getDates()  { return sbFetch('dates?order=date.asc'); },
-  async getAvail()  { return sbFetch('availability?select=*'); },
-
-  async addVol(first,last) {
-    return sbFetch('volunteers', {method:'POST', body:JSON.stringify({first_name:first,last_name:last})});
-  },
-  async removeVol(id) {
-    await sbFetch('availability?volunteer_id=eq.'+id, {method:'DELETE', prefer:''});
-    return sbFetch('volunteers?id=eq.'+id, {method:'DELETE', prefer:''});
-  },
-
-  async addDate(date,label) {
-    return sbFetch('dates', {method:'POST', body:JSON.stringify({date,label:label||''})});
-  },
-  async removeDate(id) {
-    await sbFetch('availability?date_id=eq.'+id, {method:'DELETE', prefer:''});
-    return sbFetch('dates?id=eq.'+id, {method:'DELETE', prefer:''});
-  },
-
-  async setAvail(vol_id, date_id, shift_id, checked) {
-    if (checked) {
-      // upsert
-      return sbFetch('availability', {
-        method:'POST',
-        headers:{'Prefer':'resolution=merge-duplicates,return=representation'},
-        body: JSON.stringify({volunteer_id:vol_id, date_id:date_id, shift_id:shift_id})
-      });
-    } else {
-      return sbFetch('availability?volunteer_id=eq.'+vol_id+'&date_id=eq.'+date_id+'&shift_id=eq.'+shift_id, {method:'DELETE', prefer:''});
-    }
-  },
-
-  async clearAvailForVolDate(vol_id, date_id) {
-    return sbFetch('availability?volunteer_id=eq.'+vol_id+'&date_id=eq.'+date_id, {method:'DELETE', prefer:''});
-  }
-};
-
-// ── STATE ────────────────────────────────────────────────────────────────────
-let state = { vols:[], dates:[], avail:[] };
+var supabase = window.supabase.createClient(SB_URL, SB_KEY);
+var state = {vols:[], dates:[], avail:[]};
 
 async function loadAll() {
   setLoading(true);
   try {
-    const [vols,dates,avail] = await Promise.all([db.getVols(), db.getDates(), db.getAvail()]);
-    state = {vols, dates, avail};
+    var r1 = await supabase.from('volunteers').select('*').order('last_name').order('first_name');
+    var r2 = await supabase.from('dates').select('*').order('date');
+    var r3 = await supabase.from('availability').select('*');
+    if (r1.error) throw r1.error;
+    if (r2.error) throw r2.error;
+    if (r3.error) throw r3.error;
+    state = {vols: r1.data, dates: r2.data, avail: r3.data};
   } catch(e) {
-    toast('Error loading data. Check your connection.');
+    toast('Error loading data: ' + e.message);
     console.error(e);
   }
   setLoading(false);
   renderAll();
 }
 
-// ── LOADING ──────────────────────────────────────────────────────────────────
 function setLoading(on) {
-  const bar = document.getElementById('loading-bar');
-  if(on) { bar.className='loading-bar active'; }
-  else   { bar.className='loading-bar done'; setTimeout(()=>bar.className='loading-bar',600); }
+  var bar = document.getElementById('loading-bar');
+  if (on) { bar.className = 'loading-bar active'; }
+  else    { bar.className = 'loading-bar done'; setTimeout(function(){ bar.className='loading-bar'; }, 600); }
 }
 
-// ── UTILS ────────────────────────────────────────────────────────────────────
 function fmt(str) {
-  const [y,m,d] = str.split('-').map(Number);
-  return new Date(y,m-1,d).toLocaleDateString('en-US',{weekday:'short',month:'long',day:'numeric',year:'numeric'});
+  var p = str.split('-').map(Number);
+  return new Date(p[0], p[1]-1, p[2]).toLocaleDateString('en-US', {weekday:'short',month:'long',day:'numeric',year:'numeric'});
 }
-function avc(id) { let h=0; for(let c of String(id)) h=(h*31+c.charCodeAt(0))&0xffffffff; return AVC[Math.abs(h)%AVC.length]; }
+function avc(id) {
+  var h=0, s=String(id);
+  for (var i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))&0xffffffff;
+  return AVC[Math.abs(h)%AVC.length];
+}
 function toast(msg) {
-  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2800);
+  var t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2800);
 }
 
-// ── PIN ──────────────────────────────────────────────────────────────────────
-let pendingAdminTab=null;
-function promptPin(tab,btn) {
-  pendingAdminTab=tab;
-  document.getElementById('pin-input').value='';
-  document.getElementById('pin-err').textContent='';
-  document.getElementById('pin-overlay').style.display='flex';
-  setTimeout(()=>document.getElementById('pin-input').focus(),80);
+// PIN
+var pendingAdminTab = null;
+function promptPin(tab) {
+  pendingAdminTab = tab;
+  document.getElementById('pin-input').value = '';
+  document.getElementById('pin-err').textContent = '';
+  document.getElementById('pin-overlay').style.display = 'flex';
+  setTimeout(function(){ document.getElementById('pin-input').focus(); }, 80);
 }
 function checkPin() {
-  const val=document.getElementById('pin-input').value;
-  if(val===ADMIN_PIN) {
-    document.getElementById('pin-overlay').style.display='none';
-    document.getElementById('admin-tab-btn').style.display='';
-    document.querySelectorAll('.tb').forEach(b=>b.classList.remove('active'));
+  var val = document.getElementById('pin-input').value;
+  if (val === ADMIN_PIN) {
+    document.getElementById('pin-overlay').style.display = 'none';
+    document.getElementById('admin-tab-btn').style.display = '';
+    document.querySelectorAll('.tb').forEach(function(b){ b.classList.remove('active'); });
     document.getElementById('admin-tab-btn').classList.add('active');
     switchTab(pendingAdminTab);
     renderAll();
   } else {
-    document.getElementById('pin-err').textContent='Incorrect PIN. Please try again.';
-    document.getElementById('pin-input').value='';
+    document.getElementById('pin-err').textContent = 'Incorrect PIN. Please try again.';
+    document.getElementById('pin-input').value = '';
     document.getElementById('pin-input').focus();
   }
 }
-function closePin() { document.getElementById('pin-overlay').style.display='none'; }
-let logoClicks=0;
-document.querySelector('header').addEventListener('click',()=>{
+function closePin() { document.getElementById('pin-overlay').style.display = 'none'; }
+var logoClicks = 0;
+document.querySelector('header').addEventListener('click', function() {
   logoClicks++;
-  if(logoClicks>=3){logoClicks=0;promptPin('admin',null);}
-  setTimeout(()=>logoClicks=0,1200);
+  if (logoClicks >= 3) { logoClicks=0; promptPin('admin'); }
+  setTimeout(function(){ logoClicks=0; }, 1200);
 });
 
-// ── NAVIGATION ───────────────────────────────────────────────────────────────
-function showTab(n,btn) {
-  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
-  document.querySelectorAll('.tb').forEach(b=>b.classList.remove('active'));
+// Nav
+function showTab(n, btn) {
+  document.querySelectorAll('.sec').forEach(function(s){ s.classList.remove('active'); });
+  document.querySelectorAll('.tb').forEach(function(b){ b.classList.remove('active'); });
   document.getElementById('tab-'+n).classList.add('active');
-  if(btn) btn.classList.add('active');
+  if (btn) btn.classList.add('active');
 }
 function switchTab(n) {
-  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.sec').forEach(function(s){ s.classList.remove('active'); });
   document.getElementById('tab-'+n).classList.add('active');
 }
 function showAdminTab(n) { switchTab(n); }
 
-// ── RENDER DASHBOARD ─────────────────────────────────────────────────────────
+// Dashboard
 function renderDash() {
-  const {vols,dates,avail} = state;
+  var vols=state.vols, dates=state.dates, avail=state.avail;
   document.getElementById('stat-row').innerHTML =
     '<div class="sb"><div class="sn">'+vols.length+'</div><div class="sl-stat">Volunteers</div></div>'+
     '<div class="sb"><div class="sn">'+dates.length+'</div><div class="sl-stat">Dates</div></div>'+
     '<div class="sb"><div class="sn">'+avail.length+'</div><div class="sl-stat">Responses</div></div>';
-  const g = document.getElementById('dash-grid');
-  if(!dates.length){g.innerHTML='<p class="et">No dates scheduled yet.</p>';return;}
-  g.innerHTML = dates.map(dt=>{
-    const da = avail.filter(a=>a.date_id===dt.id);
-    const sh = SHIFTS.map(s=>{
-      const who = da.filter(a=>a.shift_id===s.id).map(a=>{
-        const v=vols.find(x=>x.id===a.volunteer_id);
-        return v?'<span class="acp'+(s.optional?' opt':'')+'">'+v.first_name+' '+v.last_name+'</span>':'';
-      }).join('')||'<span class="et">No responses yet</span>';
-      const optTag=s.optional?'<span style="font-size:.6rem;color:var(--bt-ice);font-weight:700;text-transform:uppercase;margin-left:5px">(optional)</span>':'';
+  var g = document.getElementById('dash-grid');
+  if (!dates.length) { g.innerHTML='<p class="et">No dates scheduled yet.</p>'; return; }
+  g.innerHTML = dates.map(function(dt) {
+    var da = avail.filter(function(a){ return a.date_id===dt.id; });
+    var sh = SHIFTS.map(function(s) {
+      var who = da.filter(function(a){ return a.shift_id===s.id; }).map(function(a) {
+        var v = vols.find(function(x){ return x.id===a.volunteer_id; });
+        return v ? '<span class="acp'+(s.optional?' opt':'')+'">'+v.first_name+' '+v.last_name+'</span>' : '';
+      }).join('') || '<span class="et">No responses yet</span>';
+      var optTag = s.optional ? '<span style="font-size:.6rem;color:var(--bt-ice);font-weight:700;text-transform:uppercase;margin-left:5px">(optional)</span>' : '';
       return '<div class="ash'+(s.optional?' optional':'')+'"><div class="asn">'+s.label+optTag+'<br><span style="font-weight:300;text-transform:none;letter-spacing:0">'+s.time+'</span></div><div class="acs">'+who+'</div></div>';
     }).join('');
     return '<div class="ac"><div class="ach"><span class="acd">'+fmt(dt.date)+'</span>'+(dt.label?'<span class="acl">'+dt.label+'</span>':'')+'</div><div class="acb">'+sh+'</div></div>';
   }).join('');
 }
 
-// ── RENDER AVAILABILITY ───────────────────────────────────────────────────────
+// Availability
 function renderAvail() {
-  const {vols,dates} = state;
-  const vs=document.getElementById('av-vol'), ds=document.getElementById('av-date');
-  const cv=vs.value, cd=ds.value;
-  vs.innerHTML='<option value="">— Select your name —</option>'+
-    vols.map(v=>'<option value="'+v.id+'">'+v.first_name+' '+v.last_name+'</option>').join('');
-  ds.innerHTML='<option value="">— Select a date —</option>'+
-    dates.map(d=>'<option value="'+d.id+'">'+fmt(d.date)+(d.label?' — '+d.label:'')+'</option>').join('');
-  if(cv) vs.value=cv;
-  if(cd) ds.value=cd;
+  var vols=state.vols, dates=state.dates;
+  var vs=document.getElementById('av-vol'), ds=document.getElementById('av-date');
+  var cv=vs.value, cd=ds.value;
+  vs.innerHTML='<option value="">-- Select your name --</option>'+
+    vols.map(function(v){ return '<option value="'+v.id+'">'+v.first_name+' '+v.last_name+'</option>'; }).join('');
+  ds.innerHTML='<option value="">-- Select a date --</option>'+
+    dates.map(function(d){ return '<option value="'+d.id+'">'+fmt(d.date)+(d.label?' - '+d.label:'')+'</option>'; }).join('');
+  if (cv) vs.value=cv;
+  if (cd) ds.value=cd;
   updateShifts();
 }
 
 function updateShifts() {
-  const vid=document.getElementById('av-vol').value, did=document.getElementById('av-date').value;
-  const w=document.getElementById('sw');
-  if(!vid||!did){w.style.display='none';return;}
+  var vid=document.getElementById('av-vol').value, did=document.getElementById('av-date').value;
+  var w=document.getElementById('sw');
+  if (!vid||!did) { w.style.display='none'; return; }
   w.style.display='block';
-  const myAvail=state.avail.filter(a=>a.volunteer_id==vid&&a.date_id==did);
-  document.getElementById('sl').innerHTML=SHIFTS.map(s=>{
-    const chk=myAvail.some(a=>a.shift_id===s.id)?'checked':'';
-    const optTag=s.optional?'<span class="opt-badge">Optional</span>':'';
-    return '<label class="sc'+(s.optional?' sc-opt':'')+'"><input type="checkbox" '+chk+' onchange="toggleShift(''+vid+'',''+did+'',''+s.id+'',this.checked)"><div><strong>'+s.label+optTag+'</strong><br><span>'+s.time+'</span></div></label>';
+  var mine = state.avail.filter(function(a){ return String(a.volunteer_id)===String(vid) && String(a.date_id)===String(did); });
+  document.getElementById('sl').innerHTML = SHIFTS.map(function(s) {
+    var chk = mine.some(function(a){ return a.shift_id===s.id; }) ? 'checked' : '';
+    var optTag = s.optional ? '<span class="opt-badge">Optional</span>' : '';
+    return '<label class="sc'+(s.optional?' sc-opt':'')+'"><input type="checkbox" '+chk+' onchange="toggleShift('+vid+','+did+',\"'+s.id+'\",this.checked)"><div><strong>'+s.label+optTag+'</strong><br><span>'+s.time+'</span></div></label>';
   }).join('');
 }
 
-async function toggleShift(vid,did,shid,chk) {
+async function toggleShift(vid, did, shid, chk) {
   try {
-    await db.setAvail(vid,did,shid,chk);
-    const [avail] = await Promise.all([db.getAvail()]);
-    state.avail = avail;
-    renderDash();
-    renderAdmin();
-    updateShifts();
+    if (chk) {
+      var r = await supabase.from('availability').upsert(
+        {volunteer_id:vid, date_id:did, shift_id:shid},
+        {onConflict:'volunteer_id,date_id,shift_id'}
+      );
+      if (r.error) throw r.error;
+    } else {
+      var r = await supabase.from('availability')
+        .delete()
+        .eq('volunteer_id', vid)
+        .eq('date_id', did)
+        .eq('shift_id', shid);
+      if (r.error) throw r.error;
+    }
+    var r2 = await supabase.from('availability').select('*');
+    if (r2.error) throw r2.error;
+    state.avail = r2.data;
+    renderDash(); renderAdmin(); updateShifts();
   } catch(e) { toast('Error saving. Please try again.'); console.error(e); }
 }
 
 async function saveAvail() {
-  const vid=document.getElementById('av-vol').value, did=document.getElementById('av-date').value;
-  if(!vid||!did){toast('Please select your name and a date.');return;}
+  var vid=document.getElementById('av-vol').value, did=document.getElementById('av-date').value;
+  if (!vid||!did) { toast('Please select your name and a date.'); return; }
   toast('Availability saved!');
   await loadAll();
 }
 
 async function clearAvail() {
-  const vid=document.getElementById('av-vol').value, did=document.getElementById('av-date').value;
-  if(!vid||!did)return;
+  var vid=document.getElementById('av-vol').value, did=document.getElementById('av-date').value;
+  if (!vid||!did) return;
   try {
-    await db.clearAvailForVolDate(vid,did);
-    state.avail = await db.getAvail();
+    var r = await supabase.from('availability').delete().eq('volunteer_id',vid).eq('date_id',did);
+    if (r.error) throw r.error;
+    var r2 = await supabase.from('availability').select('*');
+    state.avail = r2.data;
     renderAll();
     toast('Cleared your availability for this date.');
   } catch(e) { toast('Error. Please try again.'); }
 }
 
-// ── RENDER VOLUNTEERS ─────────────────────────────────────────────────────────
+// Volunteers
 function renderVols() {
-  const {vols}=state;
-  const g=document.getElementById('vgrid');
-  if(!vols.length){g.innerHTML='<p class="et">No volunteers yet.</p>';return;}
-  g.innerHTML=vols.map(v=>
-    '<div class="vc"><div class="vi"><div class="va" style="background:'+avc(v.id)+'">'+v.first_name[0]+v.last_name[0]+'</div>'+
-    '<div><div class="vn">'+v.first_name+' '+v.last_name+'</div><div class="vr">Bookstore Volunteer</div></div></div>'+
-    '<button class="btn bd" onclick="removeVol('+v.id+')">Remove</button></div>'
-  ).join('');
+  var vols=state.vols;
+  var g=document.getElementById('vgrid');
+  if (!vols.length) { g.innerHTML='<p class="et">No volunteers yet.</p>'; return; }
+  g.innerHTML = vols.map(function(v) {
+    return '<div class="vc"><div class="vi"><div class="va" style="background:'+avc(v.id)+'">'+v.first_name[0]+v.last_name[0]+'</div>'+
+      '<div><div class="vn">'+v.first_name+' '+v.last_name+'</div><div class="vr">Bookstore Volunteer</div></div></div>'+
+      '<button class="btn bd" onclick="removeVol('+v.id+')">Remove</button></div>';
+  }).join('');
 }
 
 async function addVol() {
-  const first=document.getElementById('vf').value.trim(), last=document.getElementById('vl').value.trim();
-  if(!first||!last){toast('Please enter first and last name.');return;}
-  const btn=document.getElementById('add-vol-btn');
+  var first=document.getElementById('vf').value.trim(), last=document.getElementById('vl').value.trim();
+  if (!first||!last) { toast('Please enter first and last name.'); return; }
+  var btn=document.getElementById('add-vol-btn');
   btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Adding...';
   try {
-    await db.addVol(first,last);
+    var r = await supabase.from('volunteers').insert({first_name:first, last_name:last});
+    if (r.error) throw r.error;
     document.getElementById('vf').value=''; document.getElementById('vl').value='';
     await loadAll();
     toast(first+' '+last+' added!');
@@ -505,33 +429,39 @@ async function addVol() {
 }
 
 async function removeVol(id) {
-  if(!confirm('Remove this volunteer? Their availability will also be removed.'))return;
+  if (!confirm('Remove this volunteer? Their availability will also be removed.')) return;
   try {
-    await db.removeVol(id);
+    var r1 = await supabase.from('availability').delete().eq('volunteer_id',id);
+    if (r1.error) throw r1.error;
+    var r2 = await supabase.from('volunteers').delete().eq('id',id);
+    if (r2.error) throw r2.error;
     await loadAll();
     toast('Volunteer removed.');
-  } catch(e) { toast('Error removing volunteer.'); }
+  } catch(e) { toast('Error removing volunteer.'); console.error(e); }
 }
 
-// ── RENDER DATES ──────────────────────────────────────────────────────────────
+// Dates
 function renderDates() {
-  const {dates,avail}=state;
-  const list=document.getElementById('dlist');
-  if(!dates.length){list.innerHTML='<p class="et">No dates scheduled.</p>';return;}
-  list.innerHTML=dates.map(d=>{
-    const cnt=avail.filter(a=>a.date_id===d.id).length;
-    return '<div class="di"><div><div class="dn">'+fmt(d.date)+'</div>'+(d.label?'<div class="dlb">'+d.label+'</div>':'')+'<div class="dc">'+cnt+' response'+(cnt!==1?'s':'')+' received</div></div><button class="btn bd" onclick="removeDate('+d.id+')">Remove</button></div>';
+  var dates=state.dates, avail=state.avail;
+  var list=document.getElementById('dlist');
+  if (!dates.length) { list.innerHTML='<p class="et">No dates scheduled.</p>'; return; }
+  list.innerHTML = dates.map(function(d) {
+    var cnt = avail.filter(function(a){ return a.date_id===d.id; }).length;
+    return '<div class="di"><div><div class="dn">'+fmt(d.date)+'</div>'+(d.label?'<div class="dlb">'+d.label+'</div>':'')+
+      '<div class="dc">'+cnt+' response'+(cnt!==1?'s':'')+' received</div></div>'+
+      '<button class="btn bd" onclick="removeDate('+d.id+')">Remove</button></div>';
   }).join('');
 }
 
 async function addDate() {
-  const val=document.getElementById('nd').value, label=document.getElementById('nl').value.trim();
-  if(!val){toast('Please select a date.');return;}
-  if(state.dates.find(d=>d.date===val)){toast('That date is already scheduled.');return;}
-  const btn=document.getElementById('add-date-btn');
+  var val=document.getElementById('nd').value, label=document.getElementById('nl').value.trim();
+  if (!val) { toast('Please select a date.'); return; }
+  if (state.dates.find(function(d){ return d.date===val; })) { toast('That date is already scheduled.'); return; }
+  var btn=document.getElementById('add-date-btn');
   btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Adding...';
   try {
-    await db.addDate(val,label);
+    var r = await supabase.from('dates').insert({date:val, label:label||''});
+    if (r.error) throw r.error;
     document.getElementById('nd').value=''; document.getElementById('nl').value='';
     await loadAll();
     toast('Date added!');
@@ -540,53 +470,60 @@ async function addDate() {
 }
 
 async function removeDate(id) {
-  if(!confirm('Remove this date? All availability responses will also be removed.'))return;
+  if (!confirm('Remove this date? All availability responses will also be removed.')) return;
   try {
-    await db.removeDate(id);
+    var r1 = await supabase.from('availability').delete().eq('date_id',id);
+    if (r1.error) throw r1.error;
+    var r2 = await supabase.from('dates').delete().eq('id',id);
+    if (r2.error) throw r2.error;
     await loadAll();
     toast('Date removed.');
-  } catch(e) { toast('Error removing date.'); }
+  } catch(e) { toast('Error removing date.'); console.error(e); }
 }
 
 async function addNext8Sundays() {
-  const btn=document.getElementById('add8-btn');
+  var btn=document.getElementById('add8-btn');
   btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Adding...';
-  const existing=new Set(state.dates.map(d=>d.date));
-  const latest=state.dates.reduce((max,d)=>d.date>max?d.date:max,'');
-  let start=new Date();
-  if(latest) {
-    const[y,m,d]=latest.split('-').map(Number);
-    start=new Date(y,m-1,d); start.setDate(start.getDate()+7);
+  var existing = {};
+  state.dates.forEach(function(d){ existing[d.date]=true; });
+  var latest = state.dates.reduce(function(max,d){ return d.date>max?d.date:max; }, '');
+  var start = new Date();
+  if (latest) {
+    var p=latest.split('-').map(Number);
+    start=new Date(p[0],p[1]-1,p[2]); start.setDate(start.getDate()+7);
   } else {
     start.setDate(start.getDate()+((7-start.getDay())%7||7));
   }
-  const dow=start.getDay();
-  if(dow!==0) start.setDate(start.getDate()+((7-dow)%7));
-  let added=0;
-  for(let i=0;i<8;i++) {
-    const key=start.toISOString().split('T')[0];
-    if(!existing.has(key)) {
-      try { await db.addDate(key,''); existing.add(key); added++; } catch(e) { console.error(e); }
+  var dow=start.getDay();
+  if (dow!==0) start.setDate(start.getDate()+((7-dow)%7));
+  var added=0;
+  for (var i=0;i<8;i++) {
+    var key=start.toISOString().split('T')[0];
+    if (!existing[key]) {
+      try {
+        var r = await supabase.from('dates').insert({date:key, label:''});
+        if (!r.error) { existing[key]=true; added++; }
+      } catch(e) { console.error(e); }
     }
     start.setDate(start.getDate()+7);
   }
   await loadAll();
   btn.disabled=false; btn.textContent='+ Add Next 8 Sundays';
-  toast(added>0?'Added '+added+' Sunday'+(added!==1?'s':'')+'!':'All those Sundays are already scheduled.');
+  toast(added>0 ? 'Added '+added+' Sunday'+(added!==1?'s':'')+'!' : 'All those Sundays are already scheduled.');
 }
 
-// ── RENDER ADMIN ──────────────────────────────────────────────────────────────
+// Admin
 function renderAdmin() {
-  const {vols,dates,avail}=state;
-  const tb=document.getElementById('atbody');
-  if(!dates.length){tb.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--bt-ice);font-style:italic;padding:22px;">No dates scheduled.</td></tr>';return;}
-  tb.innerHTML=dates.map(dt=>{
-    const da=avail.filter(a=>a.date_id===dt.id);
-    const cells=SHIFTS.map((s,i)=>{
-      const names=da.filter(a=>a.shift_id===s.id).map(a=>{
-        const v=vols.find(x=>x.id===a.volunteer_id);
-        return v?'<span class="tc tc'+(i+1)+'">'+v.first_name+' '+v.last_name+'</span>':'';
-      }).join('')||'<span style="color:var(--bt-ice);font-size:.78em;font-style:italic">None yet</span>';
+  var vols=state.vols, dates=state.dates, avail=state.avail;
+  var tb=document.getElementById('atbody');
+  if (!dates.length) { tb.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--bt-ice);font-style:italic;padding:22px;">No dates scheduled.</td></tr>'; return; }
+  tb.innerHTML = dates.map(function(dt) {
+    var da = avail.filter(function(a){ return a.date_id===dt.id; });
+    var cells = SHIFTS.map(function(s, i) {
+      var names = da.filter(function(a){ return a.shift_id===s.id; }).map(function(a) {
+        var v=vols.find(function(x){ return x.id===a.volunteer_id; });
+        return v ? '<span class="tc tc'+(i+1)+'">'+v.first_name+' '+v.last_name+'</span>' : '';
+      }).join('') || '<span style="color:var(--bt-ice);font-size:.78em;font-style:italic">None yet</span>';
       return '<td'+(s.optional?' style="opacity:.75"':'')+'>'+names+'</td>';
     }).join('');
     return '<tr><td><strong>'+fmt(dt.date)+'</strong>'+(dt.label?'<br><span style="font-size:.7rem;color:var(--bt-green);font-weight:700;text-transform:uppercase;letter-spacing:.06em">'+dt.label+'</span>':'')+'</td>'+cells+'</tr>';
@@ -595,11 +532,11 @@ function renderAdmin() {
 
 function renderAll() { renderDash(); renderAvail(); renderVols(); renderDates(); renderAdmin(); }
 
-document.getElementById('av-vol').addEventListener('change',updateShifts);
-document.getElementById('av-date').addEventListener('change',updateShifts);
+document.getElementById('av-vol').addEventListener('change', updateShifts);
+document.getElementById('av-date').addEventListener('change', updateShifts);
 
-// ── BOOT ──────────────────────────────────────────────────────────────────────
 loadAll();
+
 </script>
 </body>
 </html>
