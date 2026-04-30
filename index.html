@@ -9,12 +9,12 @@
 <style>
   :root{--bt-green:#70A145;--bt-green-light:#6CBE4B;--bt-navy:#252542;--bt-navy-mid:#444A54;--bt-ice:#7C939B;--surface:#F4F6F8;--border:rgba(37,37,66,0.12);--shadow:rgba(37,37,66,0.10);}
   *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:'Lato',sans-serif;background:var(--surface);color:var(--bt-navy);min-height:100vh;}
+  body{font-family:'Lato',sans-serif;background:var(--surface);color:var(--bt-navy);min-height:100vh;-webkit-text-size-adjust:100%;}
   header{background:var(--bt-navy);padding:0 40px;display:flex;align-items:center;gap:20px;height:74px;box-shadow:0 2px 16px rgba(37,37,66,.35);}
   .logo-wrap{height:46px;display:flex;align-items:center;flex-shrink:0;}.logo-wrap svg{height:46px;width:auto;}
   .hd{width:1px;height:34px;background:rgba(255,255,255,.2);}
   .ht p{font-size:.7rem;color:var(--bt-ice);font-weight:300;letter-spacing:.14em;text-transform:uppercase;}
-  nav{background:#fff;border-bottom:1px solid var(--border);display:flex;padding:0 40px;overflow-x:auto;}
+  nav{background:#fff;border-bottom:1px solid var(--border);display:flex;padding:0 40px;overflow-x:auto;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(37,37,66,.06);}
   .tb{background:transparent;border:none;border-bottom:3px solid transparent;color:var(--bt-navy-mid);font-family:'Lato',sans-serif;font-size:.77rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:16px 18px 13px;cursor:pointer;transition:all .18s;white-space:nowrap;}
   .tb:hover{color:var(--bt-green);}.tb.active{color:var(--bt-green);border-bottom-color:var(--bt-green);}
   .main{padding:36px 40px;max-width:1200px;margin:0 auto;}.sec{display:none;}.sec.active{display:block;}
@@ -88,7 +88,52 @@
   .toast{position:fixed;bottom:26px;right:26px;background:var(--bt-navy);color:#fff;padding:11px 19px;border-radius:6px;font-size:.83rem;font-weight:700;letter-spacing:.04em;box-shadow:0 6px 24px rgba(37,37,66,.25);border-left:4px solid var(--bt-green);transform:translateY(80px);opacity:0;transition:all .28s;z-index:9998;}
   .toast.show{transform:translateY(0);opacity:1;}
   .ar{display:flex;gap:9px;flex-wrap:wrap;margin-top:18px;}
-  @media(max-width:600px){header{padding:0 16px;}nav{padding:0 10px;}.main{padding:20px 14px;}.fr{flex-direction:column;}}
+  @media(max-width:640px){
+    header{padding:0 14px;height:60px;}
+    .logo-wrap svg{height:36px;}
+    .ht p{font-size:.6rem;letter-spacing:.1em;}
+    .hd{display:none;}
+    nav{padding:0;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(37,37,66,.1);}
+    .tb{font-size:.7rem;padding:14px 12px 11px;letter-spacing:.06em;flex:1;text-align:center;}
+    .main{padding:16px 14px;}
+    .pt{font-size:1.4rem;}
+    .ps{font-size:.78rem;margin-bottom:18px;}
+    .card{padding:16px 14px;}
+    .fr{flex-direction:column;}
+    .fg input,.fg select{font-size:1rem;padding:11px 12px;}
+    .btn{padding:12px 18px;font-size:.78rem;}
+    .bp{width:100%;}
+    .bg2{width:100%;}
+    .sr{gap:8px;}
+    .sb{padding:12px 10px;}
+    .sn{font-size:1.8rem;}
+    .sl-stat{font-size:.65rem;}
+    .ag{grid-template-columns:1fr;}
+    .sc{padding:13px 12px;}
+    .sc strong{font-size:.92rem;}
+    .sc span{font-size:.8rem;}
+    .sc input[type=checkbox]{width:20px;height:20px;}
+    .vg{grid-template-columns:1fr;}
+    .vc{padding:13px 14px;}
+    .va{width:42px;height:42px;font-size:.9rem;}
+    .vn{font-size:.92rem;}
+    .bd{padding:9px 14px;font-size:.72rem;}
+    .tw{font-size:.78rem;}
+    .at th{padding:10px 10px;font-size:.75rem;}
+    .at td{padding:9px 10px;font-size:.78rem;}
+    .pin-box{padding:30px 24px;}
+    .pin-title{font-size:1.2rem;}
+    .toast{bottom:16px;right:16px;left:16px;text-align:center;}
+    .ar{flex-direction:column;}
+    .di{padding:12px 14px;}
+    .dn{font-size:.88rem;}
+  }
+  @media(max-width:640px){
+    .acb{padding:11px 13px;}
+    .acd{font-size:.85rem;}
+    .asn{font-size:.65rem;}
+    .acp{font-size:.72rem;padding:2px 7px;}
+  }
 </style>
 </head>
 <body>
@@ -234,9 +279,6 @@ async function loadAll() {
     if (r2.error) throw r2.error;
     if (r3.error) throw r3.error;
     state = {vols: r1.data, dates: r2.data, avail: r3.data};
-    console.log('VOLS:', JSON.stringify(r1.data.slice(0,2)));
-    console.log('DATES:', JSON.stringify(r2.data.slice(0,2)));
-    console.log('AVAIL:', JSON.stringify(r3.data.slice(0,3)));
   } catch(e) {
     toast('Error loading data: ' + e.message);
     console.error(e);
@@ -376,11 +418,9 @@ async function toggleShift(vid, did, shid, chk) {
         .eq('volunteer_id', Number(vid))
         .eq('date_id', Number(did))
         .eq('shift_id', shid);
-      console.log('Check existing:', JSON.stringify(check));
       if (!check.data || check.data.length === 0) {
         var r = await supabase.from('availability')
           .insert({volunteer_id: Number(vid), date_id: Number(did), shift_id: shid});
-        console.log('Insert result:', JSON.stringify(r));
         if (r.error) throw r.error;
       }
     } else {
@@ -389,12 +429,10 @@ async function toggleShift(vid, did, shid, chk) {
         .eq('volunteer_id', Number(vid))
         .eq('date_id', Number(did))
         .eq('shift_id', shid);
-      console.log('Delete result:', JSON.stringify(r));
       if (r.error) throw r.error;
     }
     var r2 = await supabase.from('availability').select('*');
     if (r2.error) throw r2.error;
-    console.log('AVAIL after save:', JSON.stringify(r2.data));
     state.avail = r2.data;
     renderDash(); renderAdmin(); updateShifts();
   } catch(e) { toast('Error saving: ' + e.message); console.error('toggleShift error:', e); }
