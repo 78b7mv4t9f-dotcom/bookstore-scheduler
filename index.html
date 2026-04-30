@@ -234,6 +234,9 @@ async function loadAll() {
     if (r2.error) throw r2.error;
     if (r3.error) throw r3.error;
     state = {vols: r1.data, dates: r2.data, avail: r3.data};
+    console.log('VOLS:', JSON.stringify(r1.data.slice(0,2)));
+    console.log('DATES:', JSON.stringify(r2.data.slice(0,2)));
+    console.log('AVAIL:', JSON.stringify(r3.data.slice(0,3)));
   } catch(e) {
     toast('Error loading data: ' + e.message);
     console.error(e);
