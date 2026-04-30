@@ -364,24 +364,34 @@ function updateShifts() {
 async function toggleShift(vid, did, shid, chk) {
   try {
     if (chk) {
-      var r = await supabase.from('availability').upsert(
-        {volunteer_id:vid, date_id:did, shift_id:shid},
-        {onConflict:'volunteer_id,date_id,shift_id'}
-      );
-      if (r.error) throw r.error;
+      // First check if record already exists
+      var check = await supabase.from('availability')
+        .select('id')
+        .eq('volunteer_id', Number(vid))
+        .eq('date_id', Number(did))
+        .eq('shift_id', shid);
+      console.log('Check existing:', JSON.stringify(check));
+      if (!check.data || check.data.length === 0) {
+        var r = await supabase.from('availability')
+          .insert({volunteer_id: Number(vid), date_id: Number(did), shift_id: shid});
+        console.log('Insert result:', JSON.stringify(r));
+        if (r.error) throw r.error;
+      }
     } else {
       var r = await supabase.from('availability')
         .delete()
-        .eq('volunteer_id', vid)
-        .eq('date_id', did)
+        .eq('volunteer_id', Number(vid))
+        .eq('date_id', Number(did))
         .eq('shift_id', shid);
+      console.log('Delete result:', JSON.stringify(r));
       if (r.error) throw r.error;
     }
     var r2 = await supabase.from('availability').select('*');
     if (r2.error) throw r2.error;
+    console.log('AVAIL after save:', JSON.stringify(r2.data));
     state.avail = r2.data;
     renderDash(); renderAdmin(); updateShifts();
-  } catch(e) { toast('Error saving. Please try again.'); console.error(e); }
+  } catch(e) { toast('Error saving: ' + e.message); console.error('toggleShift error:', e); }
 }
 
 async function saveAvail() {
